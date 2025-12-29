@@ -46,8 +46,8 @@ if not st.session_state.modo_operacional:
         key="regiao",
         on_change=lambda: st.session_state.update({"console": None})
     )
-
-    st.selectbox(
+    if st.session_state.regiao:
+        st.selectbox(
             "Selecione o Console:",
             options=regioes[st.session_state.regiao],
             key="console"
@@ -154,4 +154,5 @@ if console_pronto():
                             unsafe_allow_html=True
                         )
 
+st_autorefresh(interval=5, key="auto_refresh")  # Atualiza a cada 60 segundos
 
