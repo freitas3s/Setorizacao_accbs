@@ -38,26 +38,26 @@ if "modo_operacional" not in st.session_state:
     st.session_state.modo_operacional = False
 
 if not st.session_state.modo_operacional:
-    st.title("Setorização ACC-BS")
+    st.title("Entrada Operacional ACC-BS")
 
-    with st.form("entrada_operacional"):
-        regiao = st.selectbox(
-            "Selecione a Região:",
-            ["RRJ", "RSP", "RBR", "FIS"]
-        )
+    st.selectbox(
+        "Selecione a Região:",
+        ["RRJ", "RSP", "RBR", "FIS"],
+        key="regiao"
+    )
 
-        console = st.selectbox(
-            "Selecione o Console:",
-            regioes[regiao]
-        )
+    st.selectbox(
+        "Selecione o Console:",
+        regioes.get(st.session_state.regiao, []),
+        key="console"
+    )
 
-        entrar = st.form_submit_button("Entrar no modo operacional")
-
-    if entrar:
-        st.session_state.regiao = regiao
-        st.session_state.console = console
-        st.session_state.modo_operacional = True
-        st.rerun()
+    if st.button("Entrar no modo operacional"):
+        if st.session_state.regiao and st.session_state.console:
+            st.session_state.modo_operacional = True
+            st.rerun()
+        else:
+            st.warning("Selecione região e console")
 
 if console_pronto():
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
