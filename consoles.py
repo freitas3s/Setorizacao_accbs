@@ -154,5 +154,5 @@ if console_pronto():
                             unsafe_allow_html=True
                         )
 
-st_autorefresh(interval=5, key="auto_refresh")  # Atualiza a cada 60 segundos
+st_autorefresh(interval=10000, key="auto_refresh")  # Atualiza a cada 60 segundos
 
