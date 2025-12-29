@@ -33,12 +33,12 @@ if  "regiao" not in st.session_state:
 if "confirmado" not in st.session_state:
     st.session_state.confirmado = False
 
-if st.session_state.confirmado == False:
-    
+if not st.session_state.confirmado:
+    st.title("Setorização ACC-BS")
     regiao_selecionada = st.selectbox("Selecione a Regiao:", options=["RRJ", "RSP", "RBR", "FIS"])
     st.session_state.regiao = regiao_selecionada
 
-    console_selecionado = st.selectbox("Selecione o Console:", options=regioes[regiao_selecionada],key="console_selectbox")
+    console_selecionado = st.selectbox("Selecione o Console:", options=regioes[regiao_selecionada],)
     st.session_state.console = console_selecionado
     ctr_selecionado = f"CTR {console_selecionado}"
 
@@ -48,10 +48,9 @@ if st.session_state.confirmado == False:
 
 else:
         
-
         if st.session_state.confirmado:
             setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
-            setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"]
+            setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
 
             st.markdown(
                 f"""
