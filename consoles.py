@@ -23,7 +23,12 @@ def carregar_setorizacao(regiao):
     conn.close()
     return resultado
 
-
+def console_pronto():
+    return (
+        st.session_state.modo_operacional
+        and st.session_state.regiao is not None
+        and st.session_state.console is not None
+    )
 
 if  "console" not in st.session_state:
     st.session_state.console = None
@@ -40,10 +45,11 @@ if not st.session_state.modo_operacional:
     st.selectbox(
         "Selecione a Região:",
         options=["RRJ", "RSP", "RBR", "FIS"],
-        key="regiao"
+        key="regiao",
+        on_change=lambda: st.session_state.update({"console": None})
     )
 
-    if st.session_state.regiao:
+    if st.session_state.regiao is not None:
         st.selectbox(
             "Selecione o Console:",
             options=regioes[st.session_state.regiao],
@@ -55,12 +61,12 @@ if not st.session_state.modo_operacional:
             st.session_state.modo_operacional = True
             st.rerun()
 
-if st.session_state.modo_operacional:
+if console_pronto():
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
     for console in regioes[st.session_state.regiao]:
         setorizacao_atual.setdefault(f"CTR {console}", [])
-    setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
 
+    setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
     st.markdown(
         f"""
         <div style="text-align: center; margin-bottom: 30px;">
@@ -151,4 +157,4 @@ if st.session_state.modo_operacional:
                             unsafe_allow_html=True
                         )
 
-    st_autorefresh(interval=10000, key="refresh_console")
+
