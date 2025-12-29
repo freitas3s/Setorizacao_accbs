@@ -40,23 +40,24 @@ if "modo_operacional" not in st.session_state:
 if not st.session_state.modo_operacional:
     st.title("Setorização ACC-BS")
 
-    st.selectbox(
-        "Selecione a Região:",
-        options=["RRJ", "RSP", "RBR", "FIS"],
-        key="regiao",
-        on_change=lambda: st.session_state.update({"console": None})
-    )
-    if st.session_state.regiao:
-        st.selectbox(
-            "Selecione o Console:",
-            options=regioes[st.session_state.regiao],
-            key="console"
+    with st.form("entrada_operacional"):
+        regiao = st.selectbox(
+            "Selecione a Região:",
+            ["RRJ", "RSP", "RBR", "FIS"]
         )
 
+        console = st.selectbox(
+            "Selecione o Console:",
+            regioes[regiao]
+        )
 
-    if st.button("Entrar no modo operacional"):
-            st.session_state.modo_operacional = True
-            st.rerun()
+        entrar = st.form_submit_button("Entrar no modo operacional")
+
+    if entrar:
+        st.session_state.regiao = regiao
+        st.session_state.console = console
+        st.session_state.modo_operacional = True
+        st.rerun()
 
 if console_pronto():
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
@@ -153,6 +154,7 @@ if console_pronto():
                             """,
                             unsafe_allow_html=True
                         )
+    st.rerun()
 
 st_autorefresh(interval=10000, key="auto_refresh")  # Atualiza a cada 60 segundos
 
