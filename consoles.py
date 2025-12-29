@@ -1,8 +1,28 @@
 import streamlit as st
 from setorizacao import regioes,fronteiras,setores
-import os
-import json
+import sqlite3
 from collections import defaultdict
+
+def get_conn():
+    return sqlite3.connect("setorizacao.db", check_same_thread=False)
+
+def carregar_setorizacao(regiao):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT ctr, setor FROM setorizacao
+        WHERE regiao = ?
+    """, (regiao,))
+
+    resultado = {}
+    for ctr, setor in cur.fetchall():
+        resultado.setdefault(ctr, []).append(str(setor))
+
+    conn.close()
+    return resultado
+
+
 
 if  "console" not in st.session_state:
     st.session_state.console = None
@@ -13,12 +33,12 @@ if  "regiao" not in st.session_state:
 if "confirmado" not in st.session_state:
     st.session_state.confirmado = False
 
-if not st.session_state.confirmado:
+if st.session_state.confirmado == False:
     
     regiao_selecionada = st.selectbox("Selecione a Regiao:", options=["RRJ", "RSP", "RBR", "FIS"])
     st.session_state.regiao = regiao_selecionada
 
-    console_selecionado = st.selectbox("Selecione o Console:", options=regioes[regiao_selecionada])
+    console_selecionado = st.selectbox("Selecione o Console:", options=regioes[regiao_selecionada],key="console_selectbox")
     st.session_state.console = console_selecionado
     ctr_selecionado = f"CTR {console_selecionado}"
 
@@ -30,9 +50,7 @@ else:
         
 
         if st.session_state.confirmado:
-            with open(f"setorizacao_{st.session_state.regiao}.json","r") as arquivo:
-                setorizacao_atual = json.load(arquivo)
-
+            setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
             setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"]
 
             st.markdown(
@@ -114,3 +132,4 @@ else:
                         """,
                         unsafe_allow_html=True
                     )
+

@@ -1,6 +1,29 @@
 import streamlit as st
-import json
 from setorizacao import regioes,setores
+import sqlite3
+
+def get_conn():
+    return sqlite3.connect("setorizacao.db", check_same_thread=False)
+
+def salvar_setorizacao(regiao, configuracao):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "DELETE FROM setorizacao WHERE regiao = ?",
+        (regiao,)
+    )
+
+    for ctr, setores in configuracao.items():
+        for setor in setores:
+            cur.execute("""
+                INSERT INTO setorizacao (regiao, ctr, setor)
+                VALUES (?, ?, ?)
+            """, (regiao, ctr, setor))
+
+    conn.commit()
+    conn.close()
+
 
 if "console_selecionado" not in st.session_state:
     st.session_state.console_selecionado = None
@@ -48,13 +71,6 @@ def selecionar_setor(console):
     )
 
 
-def salvar_estado(configuracao):
-    with open(
-        f"setorizacao_{st.session_state.regiao}.json",
-        "w",
-        encoding="utf-8"
-    ) as arquivo:
-        json.dump(configuracao, arquivo, ensure_ascii=False, indent=4)
 
 if st.session_state.supervisor:
 
@@ -72,7 +88,11 @@ if st.session_state.supervisor:
 st.divider()
 
 if st.button("Confirmar agrupamento"):
-    if st.session_state.configuracao == {}:
+    if not st.session_state.configuracao:
         st.warning("Nenhuma alteração feita!")
-        salvar_estado(st.session_state.configuracao)
+    else:
+        salvar_setorizacao(
+            st.session_state.regiao,
+            st.session_state.configuracao
+        )
         st.success("Configuração salva com sucesso!")

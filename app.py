@@ -1,4 +1,26 @@
 import streamlit as st
+import sqlite3
+
+def get_conn():
+    return sqlite3.connect("setorizacao.db", check_same_thread=False)
+
+def init_db():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS setorizacao (
+            regiao TEXT,
+            ctr TEXT,
+            setor INTEGER,
+            PRIMARY KEY (regiao, ctr, setor)
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+init_db()
 
 setores = st.Page("consoles.py" , title="Setorização ACC-BS")
 supervisores = st.Page("supervisores.py" , title="Supervisores ACC-BS")
