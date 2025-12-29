@@ -92,43 +92,43 @@ else:
     )
 
 
-ctr_atual = f"CTR {st.session_state.console}"
+    ctr_atual = f"CTR {st.session_state.console}"
 
-fronteiras_agrupadas = defaultdict(list)
+    fronteiras_agrupadas = defaultdict(list)
 
-for setor, ctr in fronteiras_ctr.items():
-    if ctr != ctr_atual:
-        fronteiras_agrupadas[ctr].append(setor)
+    for setor, ctr in fronteiras_ctr.items():
+        if ctr != ctr_atual:
+            fronteiras_agrupadas[ctr].append(setor)
 
-fronteiras_agrupadas = {
-    ctr: sorted(setores)
-    for ctr, setores in sorted(fronteiras_agrupadas.items())
-    }
+    fronteiras_agrupadas = {
+        ctr: sorted(setores)
+        for ctr, setores in sorted(fronteiras_agrupadas.items())
+        }
 
 
-if not fronteiras_agrupadas:
-    st.success("Nenhuma fronteira externa no momento.")
-else:
-    cols = st.columns(len(fronteiras_agrupadas))
+    if not fronteiras_agrupadas:
+        st.success("Nenhuma fronteira externa no momento.")
+    else:
+        cols = st.columns(len(fronteiras_agrupadas))
 
-    for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
-        with col:
-            st.markdown(
-                f"""
-                <div style="
-                    border: 2px solid #4F8BF9;
-                    border-radius: 14px;
-                    padding: 16px;
-                    text-align: center;
-                    min-height: 140px;
-                ">
-                    <h1 style="margin-bottom: 10px;">{ctr}</h1>
-                    <p style="font-size: 40px;">
-                                {' · '.join(map(str, setores))}
-                            </p>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+        for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
+            with col:
+                st.markdown(
+                    f"""
+                    <div style="
+                        border: 2px solid #4F8BF9;
+                        border-radius: 14px;
+                        padding: 16px;
+                        text-align: center;
+                        min-height: 140px;
+                    ">
+                        <h1 style="margin-bottom: 10px;">{ctr}</h1>
+                        <p style="font-size: 40px;">
+                                    {' · '.join(map(str, setores))}
+                                </p>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
 
 st_autorefresh(interval=5000, key="refresh_console")
