@@ -64,10 +64,22 @@ else:
         """,
         unsafe_allow_html=True
     )
+    def carregar_todas_regioes():
+        mapa_global = {}    
+
+        for regiao in ["RRJ", "RSP", "RBR", "FIS"]:
+            setorizacao = carregar_setorizacao(regiao)
+
+            for ctr, setores in setorizacao.items():
+                for setor in setores:
+                    mapa_global[setor] = f"{ctr} ({regiao})"
+
+        return mapa_global
 
     def checar_fronteiras(setorizacao_atual, fronteiras, console_atual):
         ctr_atual = f"CTR {console_atual}"
         setores_console = setorizacao_atual.get(ctr_atual, [])
+        mapa_global = carregar_todas_regioes()
 
         setor_para_ctr = {
             setor: ctr
@@ -80,7 +92,8 @@ else:
         for setor in setores_console:
             for fronteira in fronteiras.get(setor, []):
                 if fronteira not in setores_console:
-                    resultado[fronteira] = setor_para_ctr.get(fronteira, "Fechado")
+                    resultado[fronteira] = mapa_global.get(fronteira, "Fechado")
+
 
         return dict(sorted(resultado.items()))
 
