@@ -4,8 +4,6 @@ import sqlite3
 from collections import defaultdict
 from streamlit_autorefresh import st_autorefresh
 
-st_autorefresh(interval=5000, key="refresh_console")
-
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
 
@@ -50,8 +48,6 @@ if not st.session_state.confirmado:
         st.rerun()
 
 else:
-        
-
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
     setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
 
@@ -135,3 +131,4 @@ else:
                         unsafe_allow_html=True
                     )
 
+st_autorefresh(interval=5000, key="refresh_console")
