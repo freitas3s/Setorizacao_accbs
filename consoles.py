@@ -32,8 +32,6 @@ def console_pronto():
 
 if  "console" not in st.session_state:
     st.session_state.console = None
-if  "setores" not in st.session_state:
-    st.session_state.setores = None
 if  "regiao" not in st.session_state:
     st.session_state.regiao = None
 if "modo_operacional" not in st.session_state:
@@ -49,15 +47,14 @@ if not st.session_state.modo_operacional:
         on_change=lambda: st.session_state.update({"console": None})
     )
 
-    if st.session_state.regiao is not None:
-        st.selectbox(
+    st.selectbox(
             "Selecione o Console:",
             options=regioes[st.session_state.regiao],
             key="console"
         )
 
-    if st.session_state.regiao and st.session_state.console:
-        if st.button("Entrar no modo operacional"):
+
+    if st.button("Entrar no modo operacional"):
             st.session_state.modo_operacional = True
             st.rerun()
 
