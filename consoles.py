@@ -31,24 +31,34 @@ if  "setores" not in st.session_state:
     st.session_state.setores = None
 if  "regiao" not in st.session_state:
     st.session_state.regiao = None
-if "confirmado" not in st.session_state:
-    st.session_state.confirmado = False
+if "modo_operacional" not in st.session_state:
+    st.session_state.modo_operacional = False
 
-if not st.session_state.confirmado:
+if not st.session_state.modo_operacional:
     st.title("Setorização ACC-BS")
-    regiao_selecionada = st.selectbox("Selecione a Regiao:", options=["RRJ", "RSP", "RBR", "FIS"])
-    st.session_state.regiao = regiao_selecionada
 
-    console_selecionado = st.selectbox("Selecione o Console:", options=regioes[regiao_selecionada],)
-    st.session_state.console = console_selecionado
-    ctr_selecionado = f"CTR {console_selecionado}"
+    st.selectbox(
+        "Selecione a Região:",
+        options=["RRJ", "RSP", "RBR", "FIS"],
+        key="regiao"
+    )
 
-    if st.button("Confirmar"):
-        st.session_state.confirmado = True
-        st.rerun()
+    if st.session_state.regiao:
+        st.selectbox(
+            "Selecione o Console:",
+            options=regioes[st.session_state.regiao],
+            key="console"
+        )
 
-else:
+    if st.session_state.regiao and st.session_state.console:
+        if st.button("Entrar no modo operacional"):
+            st.session_state.modo_operacional = True
+            st.rerun()
+
+if st.session_state.modo_operacional:
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
+    for console in regioes[st.session_state.regiao]:
+        setorizacao_atual.setdefault(f"CTR {console}", [])
     setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
 
     st.markdown(
@@ -57,13 +67,14 @@ else:
             <h1 style="font-size: 150px; margin-bottom: 10px;">
                 CTR {st.session_state.console}
             </h1>
-            <p style="font-size: 72px;">
-                {' · '.join(map(str, sorted(setores_ctr)))}
+            <p style="font-size: 72px; color: #999;">
+                { ' · '.join(sorted(setores_ctr)) if setores_ctr else "Sem setores alocados" }
             </p>
         </div>
         """,
         unsafe_allow_html=True
     )
+    @st.cache_data(ttl=5)
     def carregar_todas_regioes():
         mapa_global = {}    
 
@@ -79,24 +90,21 @@ else:
     def checar_fronteiras(setorizacao_atual, fronteiras, console_atual):
         ctr_atual = f"CTR {console_atual}"
         setores_console = setorizacao_atual.get(ctr_atual, [])
-        mapa_global = carregar_todas_regioes()
 
-        setor_para_ctr = {
-            setor: ctr
-            for ctr, setores in setorizacao_atual.items()
-            for setor in setores
-        }
+        mapa_global = carregar_todas_regioes()
 
         resultado = {}
 
         for setor in setores_console:
             for fronteira in fronteiras.get(setor, []):
                 if fronteira not in setores_console:
-                    resultado[fronteira] = mapa_global.get(fronteira, "Fechado")
-
+                    # sempre usa o mapa global
+                    resultado[fronteira] = mapa_global.get(
+                        fronteira,
+                        "Desconhecido"
+                    )
 
         return dict(sorted(resultado.items()))
-
 
     fronteiras_ctr = checar_fronteiras(
         setorizacao_atual,
@@ -110,8 +118,7 @@ else:
     fronteiras_agrupadas = defaultdict(list)
 
     for setor, ctr in fronteiras_ctr.items():
-        if ctr != ctr_atual:
-            fronteiras_agrupadas[ctr].append(setor)
+        fronteiras_agrupadas[ctr].append(setor)
 
     fronteiras_agrupadas = {
         ctr: sorted(setores)
@@ -144,4 +151,4 @@ else:
                             unsafe_allow_html=True
                         )
 
-st_autorefresh(interval=5000, key="refresh_console")
+    st_autorefresh(interval=10000, key="refresh_console")
