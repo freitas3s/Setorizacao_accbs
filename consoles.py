@@ -50,14 +50,13 @@ if not st.session_state.confirmado:
 else:
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
     setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
-
     st.markdown(
         f"""
         <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="font-size: 150px; margin-bottom: 10px;">
+            <h1 style="font-size: 200px; margin-bottom: 10px;">
                 CTR {st.session_state.console}
             </h1>
-            <p style="font-size: 72px;">
+            <p style="font-size: 100px;">
                 {' · '.join(map(str, sorted(setores_ctr)))}
             </p>
         </div>
@@ -92,8 +91,8 @@ else:
         for setor in setores_console:
             for fronteira in fronteiras.get(setor, []):
                 if fronteira not in setores_console:
-                    resultado[fronteira] = mapa_global.get(fronteira, "Fechado")
-
+                    if fronteira in mapa_global:
+                        resultado[fronteira] = mapa_global[fronteira]
 
         return dict(sorted(resultado.items()))
 
@@ -139,9 +138,9 @@ else:
                         <p style="font-size: 40px;">
                                     {' · '.join(map(str, setores))}
                                 </p>
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
 st_autorefresh(interval=5000, key="refresh_console")
