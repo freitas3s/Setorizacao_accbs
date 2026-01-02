@@ -1,6 +1,7 @@
 import streamlit as st
 from setorizacao import regioes,setores
 import sqlite3
+from datetime import datetime
 
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
@@ -21,6 +22,43 @@ def salvar_setorizacao(regiao, configuracao):
                 VALUES (?, ?, ?)
             """, (regiao, ctr, setor))
 
+    conn.commit()
+    conn.close()
+
+def formatar_grupos(setorizacao_regiao):
+    grupos = []
+
+    for setores in setorizacao_regiao.values():
+        if setores:
+            setores_ordenados = sorted(
+                setores,
+                key=lambda x: int(x) if x.isdigit() else x
+            )
+            grupos.append("·".join(setores_ordenados))
+
+    return " | ".join(grupos)
+
+def registrar_log(regiao, configuracao):
+    conn = sqlite3.connect("setorizacao.db")
+    cur = conn.cursor()
+
+    grupos_formatados = formatar_grupos(configuracao)
+
+    qtd_consoles = sum(
+        1 for setores in configuracao.values() if setores
+    )
+
+    horario = datetime.utcnow().strftime("%H:%M:%S")
+
+    cur.execute("""
+        INSERT INTO setorizacao_log (regiao, horario, grupos, qtd_consoles)
+        VALUES (?, ?, ?, ?)
+    """, (
+        regiao,
+        horario,
+        grupos_formatados,
+        qtd_consoles
+    ))
     conn.commit()
     conn.close()
 
@@ -91,6 +129,10 @@ if st.button("Confirmar agrupamento"):
     if not st.session_state.configuracao:
         st.warning("Nenhuma alteração feita!")
     else:
+        registrar_log(
+            st.session_state.regiao,
+            st.session_state.configuracao
+        )
         salvar_setorizacao(
             st.session_state.regiao,
             st.session_state.configuracao
