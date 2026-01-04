@@ -2,7 +2,7 @@ import streamlit as st
 from setorizacao import regioes,setores
 import sqlite3
 from datetime import datetime
-
+import re
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
 
@@ -25,18 +25,44 @@ def salvar_setorizacao(regiao, configuracao):
     conn.commit()
     conn.close()
 
+def chave_setor(setor):
+    setor = setor.upper()
+
+    match = re.match(r"^(\d+)([A-Z]?)$", setor)
+    if match:
+        return (0, int(match.group(1)), match.group(2))
+
+    # FIS vem depois dos setores numéricos
+    if setor == "FIS":
+        return (1,)
+
+    # Qualquer outro rótulo especial
+    return (2, setor)
+
+
 def formatar_grupos(setorizacao_regiao):
     grupos = []
 
     for setores in setorizacao_regiao.values():
-        if setores:
-            setores_ordenados = sorted(
-                setores,
-                key=lambda x: int(x) if x.isdigit() else x
-            )
-            grupos.append("·".join(setores_ordenados))
+        if not setores:
+            continue
+
+        setores_upper = [s.upper() for s in setores]
+
+        # REGRA ESPECIAL: AGRUPADO
+        if "AGRUPADO" in setores_upper:
+            if "FIS" in setores_upper:
+                grupos.append("AGRUPADO · FIS")
+            else:
+                grupos.append("AGRUPADO")
+            continue  # ignora qualquer outro setor
+
+        # Caso normal (sem AGRUPADO)
+        setores_ordenados = sorted(setores_upper, key=chave_setor)
+        grupos.append(" · ".join(setores_ordenados))
 
     return " | ".join(grupos)
+
 
 def registrar_log(regiao, configuracao):
     conn = sqlite3.connect("setorizacao.db")

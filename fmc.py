@@ -78,37 +78,37 @@ for col, (regiao, (horario, grupos, qtd)) in zip(cols, ultimo_por_regiao.items()
             unsafe_allow_html=True
         )
 
-    st.title("Controle FMC - Setorização ACC-BS")
-    st.markdown("---") 
-    if st.button("carregar agrupamentos anteriores", key="carregar_anteriores"):
-        st.markdown(
-            df.to_html(
-                index=False,
-                justify="center"
-            ),
-            unsafe_allow_html=True
-        )
-        
-    st.markdown("---")
-        
-    st.warning("Cuidado !!! Esta ação apagará todos os registros anteriores.")
-    if st.button("Apagar registros", key="apagar_logs"):
-            conn = get_conn()
-            cur = conn.cursor()
-            cur.execute("""DELETE FROM setorizacao_log
-                            WHERE id NOT IN (
-                            SELECT MAX(id)
-                            FROM setorizacao_log
-                            GROUP BY regiao
-                            )""")
-            conn.commit()
-            conn.close()
-            st.success("Registros apagados com sucesso!")
+st.title("Controle FMC - Setorização ACC-BS")
+st.markdown("---") 
+if st.button("carregar agrupamentos anteriores", key="carregar_anteriores"):
+    st.markdown(
+        df.to_html(
+            index=False,
+            justify="center"
+        ),
+        unsafe_allow_html=True
+    )
+    
+st.markdown("---")
+    
+st.warning("Cuidado !!! Esta ação apagará todos os registros anteriores.")
+if st.button("Apagar registros", key="apagar_logs"):
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("""DELETE FROM setorizacao_log
+                        WHERE id NOT IN (
+                        SELECT MAX(id)
+                        FROM setorizacao_log
+                        GROUP BY regiao
+                        )""")
+        conn.commit()
+        conn.close()
+        st.success("Registros apagados com sucesso!")
 
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM setorizacao_log")
-    st.write("Registros restantes:", cur.fetchone()[0])
-    conn.close()
+conn = get_conn()
+cur = conn.cursor()
+cur.execute("SELECT COUNT(*) FROM setorizacao_log")
+st.write("Registros restantes:", cur.fetchone()[0])
+conn.close()
 
 st_autorefresh(interval=300000, key="refresh_panorama")
