@@ -80,7 +80,7 @@ if not st.session_state.supervisor:
 
     regiao_selecionada = st.selectbox(
         "Selecione a Região:",
-        options=["RRJ", "RSP", "RBR", "FIS"]
+        options=["RRJ", "RSP", "RBR"]
     )
     st.session_state.regiao = regiao_selecionada
 
