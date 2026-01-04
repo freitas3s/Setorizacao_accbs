@@ -2,7 +2,6 @@ import streamlit as st
 from collections import defaultdict
 from streamlit_autorefresh import st_autorefresh
 import sqlite3
-from datetime import datetime
 import pandas as pd
 
 def get_conn():
@@ -15,29 +14,35 @@ def carregar_logs():
     cur.execute("""
         SELECT regiao, horario, grupos, qtd_consoles
         FROM setorizacao_log
-        ORDER BY regiao, id ASC
+        ORDER BY regiao, id DESC
     """)
-    if datetime.now().hour == 7 or datetime.now().hour == 14 or datetime.now().hour == 23:
-        cur.execute("""
-            DELETE FROM setorizacao_log
-        """)
 
     dados = cur.fetchall()
     conn.close()
     return dados
 
-def logs_para_dataframe(logs):
+def logs_para_dataframe():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT regiao, horario, grupos, qtd_consoles
+        FROM setorizacao_log
+        ORDER BY regiao, id ASC
+    """)
+
+    dados = cur.fetchall()
+    conn.close()
     return pd.DataFrame(
-        logs,
+        dados,
         columns=["Região", "Horário", "Grupos", "Qtd Consoles"]
     )
 
-st.title("Controle FMC - Setorização ACC-BS")
+
 logs = carregar_logs()
-df = logs_para_dataframe(logs)
+df = logs_para_dataframe()
 # pega apenas o mais recente de cada região
 ultimo_por_regiao = {}
-
 for regiao, horario, grupos, qtd in logs:
     if regiao not in ultimo_por_regiao:
         ultimo_por_regiao[regiao] = (horario, grupos, qtd)
@@ -73,16 +78,37 @@ for col, (regiao, (horario, grupos, qtd)) in zip(cols, ultimo_por_regiao.items()
             unsafe_allow_html=True
         )
 
-st.markdown("---") 
+    st.title("Controle FMC - Setorização ACC-BS")
+    st.markdown("---") 
+    if st.button("carregar agrupamentos anteriores", key="carregar_anteriores"):
+        st.markdown(
+            df.to_html(
+                index=False,
+                justify="center"
+            ),
+            unsafe_allow_html=True
+        )
+        
+    st.markdown("---")
+        
+    st.warning("Cuidado !!! Esta ação apagará todos os registros anteriores.")
+    if st.button("Apagar registros", key="apagar_logs"):
+            conn = get_conn()
+            cur = conn.cursor()
+            cur.execute("""DELETE FROM setorizacao_log
+                            WHERE id NOT IN (
+                            SELECT MAX(id)
+                            FROM setorizacao_log
+                            GROUP BY regiao
+                            )""")
+            conn.commit()
+            conn.close()
+            st.success("Registros apagados com sucesso!")
 
-if st.button("carregar agrupamentos anteriores", key="carregar_anteriores"):
-    st.dataframe(
-        df,
-        column_order=["Região", "Horário", "Grupos", "Qtd Consoles"],
-        hide_index=True,
-        row_height=70,
-        use_container_width=True
-
-    )
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM setorizacao_log")
+    st.write("Registros restantes:", cur.fetchone()[0])
+    conn.close()
 
 st_autorefresh(interval=300000, key="refresh_panorama")
