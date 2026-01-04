@@ -35,13 +35,65 @@ def logs_para_dataframe():
     conn.close()
     return pd.DataFrame(
         dados,
-        columns=["Região", "Horário", "Grupos", "Qtd Consoles"]
+        columns=["Região", "Horário", "Setores", "Nº Consoles"]
     )
 
 
 logs = carregar_logs()
 df = logs_para_dataframe()
-# pega apenas o mais recente de cada região
+# estilização da tabela de logs
+def estilizar_tabela(df):
+    return (
+        df.style
+        .set_properties(**{
+            "text-align": "center",
+            "font-size": "16px",
+            "padding": "8px"
+        })
+        .set_table_styles([
+            {
+                "selector": "table",
+                "props": [
+                    ("border-collapse", "separate"),
+                    ("border-spacing", "0 12px"),
+                    ("width", "100%")
+                ]
+            },
+            {
+                "selector": "th",
+                "props": [
+                    # ("background-color", "#000000"),
+                    ("color", "white"),
+                    ("border-radius", "10px"),
+                    ("padding", "10px"),
+                    ("font-size", "18px")
+                ]
+            },
+            {
+                "selector": "td",
+                "props": [
+                    # ("background-color", "#000000"),
+                    ("border-radius", "12px")
+                ]
+            }
+        ])
+    )
+
+def cor_por_regiao(regiao):
+    cores = {
+        "RRJ": "#0095fe",
+        "RSP": "#ff062b",
+        "RBR": "#ff9d00",
+        "FIS": "#fce4ec"
+    }
+    return f"background-color: {cores.get(regiao, "#090000")}"
+
+df_estilizado = (
+    estilizar_tabela(df)
+    .applymap(cor_por_regiao, subset=["Região"])
+)
+
+
 ultimo_por_regiao = {}
 for regiao, horario, grupos, qtd in logs:
     if regiao not in ultimo_por_regiao:
@@ -82,13 +134,10 @@ st.title("Controle FMC - Setorização ACC-BS")
 st.markdown("---") 
 if st.button("carregar agrupamentos anteriores", key="carregar_anteriores"):
     st.markdown(
-        df.to_html(
-            index=False,
-            justify="center"
-        ),
-        unsafe_allow_html=True
-    )
-    
+    df_estilizado.to_html(),
+    unsafe_allow_html=True
+)
+
 st.markdown("---")
     
 st.warning("Cuidado !!! Esta ação apagará todos os registros anteriores.")
