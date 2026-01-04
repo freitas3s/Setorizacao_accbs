@@ -2,6 +2,8 @@ import streamlit as st
 from collections import defaultdict
 from streamlit_autorefresh import st_autorefresh
 import sqlite3
+from datetime import datetime
+import pandas as pd
 
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
@@ -13,16 +15,26 @@ def carregar_logs():
     cur.execute("""
         SELECT regiao, horario, grupos, qtd_consoles
         FROM setorizacao_log
-        ORDER BY id DESC
+        ORDER BY regiao, id ASC
     """)
+    if datetime.now().hour == 7 or datetime.now().hour == 14 or datetime.now().hour == 23:
+        cur.execute("""
+            DELETE FROM setorizacao_log
+        """)
 
     dados = cur.fetchall()
     conn.close()
     return dados
 
+def logs_para_dataframe(logs):
+    return pd.DataFrame(
+        logs,
+        columns=["Região", "Horário", "Grupos", "Qtd Consoles"]
+    )
+
 st.title("Controle FMC - Setorização ACC-BS")
 logs = carregar_logs()
-
+df = logs_para_dataframe(logs)
 # pega apenas o mais recente de cada região
 ultimo_por_regiao = {}
 
@@ -61,4 +73,16 @@ for col, (regiao, (horario, grupos, qtd)) in zip(cols, ultimo_por_regiao.items()
             unsafe_allow_html=True
         )
 
-st_autorefresh(interval=10000, key="refresh_panorama")
+st.markdown("---") 
+
+if st.button("carregar agrupamentos anteriores", key="carregar_anteriores"):
+    st.dataframe(
+        df,
+        column_order=["Região", "Horário", "Grupos", "Qtd Consoles"],
+        hide_index=True,
+        row_height=70,
+        use_container_width=True
+
+    )
+
+st_autorefresh(interval=300000, key="refresh_panorama")

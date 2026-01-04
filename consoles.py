@@ -36,7 +36,7 @@ if "confirmado" not in st.session_state:
 
 if not st.session_state.confirmado:
     st.title("Setorização ACC-BS")
-    regiao_selecionada = st.selectbox("Selecione a Regiao:", options=["RRJ", "RSP", "RBR", "FIS"])
+    regiao_selecionada = st.selectbox("Selecione a Regiao:", options=["RRJ", "RSP", "RBR"])
     st.session_state.regiao = regiao_selecionada
 
     console_selecionado = st.selectbox("Selecione o Console:", options=regioes[regiao_selecionada],)
@@ -56,7 +56,7 @@ else:
             <h1 style="font-size: 200px; margin-bottom: 10px;">
                 CTR {st.session_state.console}
             </h1>
-            <p style="font-size: 100px;">
+            <p style="font-size: 200px;">
                 {' · '.join(map(str, sorted(setores_ctr)))}
             </p>
         </div>
