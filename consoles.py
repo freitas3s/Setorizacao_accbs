@@ -32,8 +32,8 @@ def calcular_nref(regiao, setores_console, nref):
     if not tabela_regiao:
         return None
 
-    if "AGRUPADO" in setores_console:
-        return tabela_regiao.get("AGRUPADO")
+    if f"{regiao} AGRUPADO" in setores_console:
+        return tabela_regiao.get(f"{regiao} AGRUPADO")
     setores_norm = sorted(setores_console)
     chave = "/".join(setores_norm)
     if chave in tabela_regiao:
@@ -75,6 +75,7 @@ if not st.session_state.confirmado:
 else:
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
     setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
+    st.write(setores_ctr)
     nref_valor = calcular_nref(
     st.session_state.regiao,
     setores_ctr,
@@ -97,7 +98,7 @@ else:
     if nref_valor:
         st.markdown(
             f"""
-            <div style="text-align: right; margin-top: -100px;">
+            <div style="text-align: right; margin-top: -50px;">
                 <p style="font-size: 48px; color: #ffffff;">
                     Nref/Pico {nref_valor}
                 </p>
