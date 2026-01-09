@@ -75,7 +75,6 @@ if not st.session_state.confirmado:
 else:
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
     setores_ctr = setorizacao_atual[f"CTR {st.session_state.console}"] if f"CTR {st.session_state.console}" in setorizacao_atual else []
-    st.write(setores_ctr)
     nref_valor = calcular_nref(
     st.session_state.regiao,
     setores_ctr,
