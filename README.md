@@ -68,4 +68,10 @@ CREATE TABLE setorizacao (
     regiao TEXT,
     ctr TEXT,
     setor TEXT
-);
+);```
+
+**Características:**
+
+-Cada registro representa um setor ativo em um CTR
+-Consoles sem setores são tratados automaticamente
+-Não ocorre erro para CTR vazio
