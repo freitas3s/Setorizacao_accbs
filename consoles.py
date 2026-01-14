@@ -4,8 +4,12 @@ import sqlite3
 from collections import defaultdict
 from streamlit_autorefresh import st_autorefresh
 
+
+
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
+
+
 
 def carregar_setorizacao(regiao):
     conn = get_conn()
@@ -22,6 +26,8 @@ def carregar_setorizacao(regiao):
 
     conn.close()
     return resultado
+
+
 
 def calcular_nref(regiao, setores_console, nref):
 
@@ -41,6 +47,7 @@ def calcular_nref(regiao, setores_console, nref):
     return tabela_regiao.get("DEMAIS")
 
 
+
 def setores_app(setor, regiao):
 
     setor = str(setor)
@@ -50,6 +57,8 @@ def setores_app(setor, regiao):
 
     return setor
 
+
+
 if  "console" not in st.session_state:
     st.session_state.console = None
 if  "setores" not in st.session_state:
@@ -58,6 +67,7 @@ if  "regiao" not in st.session_state:
     st.session_state.regiao = None
 if "confirmado" not in st.session_state:
     st.session_state.confirmado = False
+
 
 if not st.session_state.confirmado:
     st.title("Setorização ACC-BS")
@@ -71,6 +81,7 @@ if not st.session_state.confirmado:
     if st.button("Confirmar"):
         st.session_state.confirmado = True
         st.rerun()
+
 
 else:
     setorizacao_atual = carregar_setorizacao(st.session_state.regiao)
@@ -106,6 +117,7 @@ else:
             unsafe_allow_html=True
         )
 
+
     def carregar_todas_regioes():
         mapa_global = {}    
 
@@ -117,6 +129,7 @@ else:
                     mapa_global[setor] = f"{ctr} ({regiao})"
 
         return mapa_global
+
 
     def checar_fronteiras(setorizacao_atual, fronteiras, console_atual):
         ctr_atual = f"CTR {console_atual}"
@@ -155,6 +168,7 @@ else:
         for ctr, setores in sorted(fronteiras_agrupadas.items())
         }
 #bloco app
+
     if st.session_state.regiao == "APP":
             def nome_setor_app_br(setor):
                 setor = str(setor)
@@ -194,7 +208,6 @@ else:
             st.success("Nenhuma fronteira externa no momento.")        
         else:
             cols = st.columns(len(fronteiras_agrupadas))
-
             for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
                 with col:
                     st.markdown(
@@ -214,5 +227,6 @@ else:
                             """,
                             unsafe_allow_html=True
                         )
-
+                    
+                    
 st_autorefresh(interval=5000, key="refresh_console")
