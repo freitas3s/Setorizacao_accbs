@@ -25,7 +25,13 @@ def init_db():
             qtd_consoles INTEGER NOT NULL
         )
     """)
-
+    cur.execute(""" 
+                CREATE TABLE IF NOT EXISTS observacoes(
+                regiao TEXT,
+                setor TEXT,
+                observacao TEXT
+                )
+                """)
     conn.commit()
     conn.close()
 

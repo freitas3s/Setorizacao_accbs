@@ -3,6 +3,7 @@ from setorizacao import regioes,setores
 import sqlite3
 from datetime import datetime
 import re
+
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
 
@@ -89,6 +90,23 @@ def registrar_log(regiao, configuracao):
     conn.close()
 
 
+
+def registrar_observações(regiao,setor,observacao):
+    conn = sqlite3.connect("setorizacao.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO observacoes (regiao,setor,observacao)
+        VALUES (?, ?, ?)
+        """,(
+            regiao,
+            setor,
+            observacao,
+        ))
+    conn.commit()
+    conn.close()
+
+
+
 if "console_selecionado" not in st.session_state:
     st.session_state.console_selecionado = None
 if "agrupamento_selecionado" not in st.session_state:
@@ -133,8 +151,6 @@ def selecionar_setor(console):
         key=f"setores_{console}"
     )
 
-
-
 if st.session_state.supervisor:
 
     consoles = regioes[st.session_state.regiao]
@@ -148,18 +164,45 @@ if st.session_state.supervisor:
 
             st.session_state.configuracao[f"CTR {console}"] = setores_selecionados
 
-st.divider()
+    st.divider()
 
-if st.button("Confirmar agrupamento"):
-    if not st.session_state.configuracao:
-        st.warning("Nenhuma alteração feita!")
-    else:
-        registrar_log(
-            st.session_state.regiao,
-            st.session_state.configuracao
-        )
-        salvar_setorizacao(
-            st.session_state.regiao,
-            st.session_state.configuracao
-        )
-        st.success("Configuração salva com sucesso!")
+    if st.button("Confirmar agrupamento"):
+        if not st.session_state.configuracao:
+            st.warning("Nenhuma alteração feita!")
+        else:
+            registrar_log(
+                st.session_state.regiao,
+                st.session_state.configuracao
+            )
+            salvar_setorizacao(
+                st.session_state.regiao,
+                st.session_state.configuracao
+            )
+            st.success("Configuração salva com sucesso!")
+
+    st.divider()
+
+    st.header("Registrar Observações")
+
+    regiao = st.session_state.regiao
+    setor = st.selectbox("Selecione o Setor:", options=setores[regiao])
+    observacao = st.text_input("Observação:")
+
+    if st.button("Salvar Observação"):
+        if not observacao.strip():
+            st.warning("A observação não pode ser vazia!")
+        else:
+            registrar_observações(regiao,setor,observacao)
+            st.success("Observação salva com sucesso!")
+
+    if st.button("Apagar Observações"):
+        conn = sqlite3.connect("setorizacao.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            DELETE FROM observacoes WHERE regiao = ?
+            """,(
+                regiao,
+            ))
+        conn.commit()
+        conn.close()
+        st.success("Observações apagadas com sucesso!")

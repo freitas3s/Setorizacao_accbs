@@ -27,6 +27,21 @@ def carregar_setorizacao(regiao):
     conn.close()
     return resultado
 
+def carregar_observacoes():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT setor, observacao FROM observacoes
+    """,)
+
+    resultado = {}
+    for setor, observacao in cur.fetchall():
+        resultado[setor] = observacao
+
+    conn.close()
+    return resultado
+
 
 
 def calcular_nref(regiao, setores_console, nref):
@@ -116,7 +131,7 @@ else:
             """,
             unsafe_allow_html=True
         )
-
+    
 
     def carregar_todas_regioes():
         mapa_global = {}    
@@ -182,7 +197,6 @@ else:
             st.session_state.console
             )
             cols = st.columns(len(fronteiras_agrupadas))
-
             for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
                 with col:
                     st.markdown(
@@ -197,6 +211,7 @@ else:
                             <h2>{ctr}</h2>
                             <p style="font-size: 38px; font-weight: 600;">
                                 {' · '.join(nome_setor_app_br(s) for s in setores)}
+                                
                             </p>
                         </div>
                         """,
@@ -208,25 +223,37 @@ else:
             st.success("Nenhuma fronteira externa no momento.")        
         else:
             cols = st.columns(len(fronteiras_agrupadas))
-            for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
-                with col:
-                    st.markdown(
-                        f"""
-                        <div style="
-                            border: 2px solid #4F8BF9;
-                            border-radius: 14px;
-                            padding: 16px;
-                            text-align: center;
-                            min-height: 140px;
-                        ">
-                            <h1 style="margin-bottom: 10px;">{ctr}</h1>
-                            <p style="font-size: 40px;">
-                                        {' · '.join(map(str, setores))}
-                                    </p>
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                    
+
+        observacoes = carregar_observacoes()
+        for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
+            with col:
+                # Coleta observações dos setores dessa coluna
+                obs_setores = [
+                    f"<b>{setor}</b>: {observacoes[setor]}"
+                    for setor in setores
+                    if setor in observacoes
+                ]
+
+                st.markdown(
+                    f"""
+                    <div style="
+                        border: 2px solid #4F8BF9;
+                        border-radius: 14px;
+                        padding: 16px;
+                        text-align: center;
+                        min-height: 140px;
+                    ">
+                    <h2 style="margin-bottom: 10px;">{ctr}</h2>
+                    <p style="font-size: 28px; margin-bottom: 10px;">
+                        {' - '.join(map(str, setores))}
+                    </p>
+
+                    {"<hr>" if obs_setores else ""}
+
+                    {"<br>".join(obs_setores)}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
                     
 st_autorefresh(interval=5000, key="refresh_console")
