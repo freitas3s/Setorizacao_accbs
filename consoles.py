@@ -98,7 +98,7 @@ else:
                 CTR {st.session_state.console}
             </h1>
             <p style="font-size: 200px;">
-                {' · '.join(map(str, sorted(setores_ctr)))} 
+                {'-'.join(map(str, sorted(setores_ctr)))} 
             </p>
         </div>
         """,

@@ -127,7 +127,6 @@ else:
 
 def selecionar_setor(console):
     setores_disponiveis = setores[st.session_state.regiao]
-
     return st.multiselect(
         "Selecione os Setores:",
         options=setores_disponiveis,
