@@ -243,13 +243,13 @@ else:
                         min-height: 140px;
                     ">
                     <h2 style="margin-bottom: 10px;">{ctr}</h2>
-                    <p style="font-size: 28px; margin-bottom: 10px;">
+                    <p style="font-size: 34px; margin-bottom: 10px;">
                         {' - '.join(map(str, setores))}
                     </p>
 
                     {"<hr>" if obs_setores else ""}
 
-                    {"<br>".join(obs_setores)}
+                    {"<br style = 'font-size: 15px;'>".join(obs_setores)}
                     </div>
                     """,
                     unsafe_allow_html=True
