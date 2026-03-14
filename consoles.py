@@ -218,7 +218,6 @@ else:
                             <h2>{ctr}</h2>
                             <p style="font-size: 38px; font-weight: 600;">
                                 {' · '.join(nome_setor_app_br(s) for s in setores)}
-                                
                             </p>
                         </div>
                         """,
