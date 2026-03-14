@@ -81,7 +81,8 @@ def cor_por_regiao(regiao):
         "RBR": "#02d510",
         "FIS": "#fce4ec"
     }
-    return f"border: 2px solid {cores.get(regiao, "#090000")}"
+    if regiao in cores:
+        return f"border: 2px solid {cores.get(regiao, "#090000")}"
 
 if  "console" not in st.session_state:
     st.session_state.console = None
@@ -233,6 +234,9 @@ else:
             cols = st.columns(len(fronteiras_agrupadas))
 
         observacoes = carregar_observacoes()
+        regiao = ctr.split("(")[-1].replace(")", "")
+        cor_borda = cor_por_regiao(regiao,"#4F8BF9")
+
         for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
             with col:
                 # Coleta observações dos setores dessa coluna
@@ -241,11 +245,10 @@ else:
                     for setor in setores
                     if setor in observacoes
                 ]
-                st.write(ctr)
                 st.markdown(
                     f"""
                     <div style="
-                        border: 2px solid #4F8BF9;
+                        border: 2px solid {cor_borda};
                         border-radius: 14px;
                         padding: 16px;
                         text-align: center;
@@ -258,7 +261,7 @@ else:
 
                     {"<hr>" if obs_setores else ""}
 
-                    {"<br style = 'font-size: 15px;'>".join(obs_setores)}
+                    {"<p style='font-size: 24px;'>".join(obs_setores)}</p>
                     </div>
                     """,
                     unsafe_allow_html=True
