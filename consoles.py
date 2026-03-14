@@ -75,10 +75,11 @@ def setores_app(setor, regiao):
 
 
 cor_por_regiao = {
-    "RRJ": "#5DADE2",   # azul suave
-    "RSP": "#F5B041",   # amarelo tendendo ao laranja
-    "RBR": "#58D68D"    # verde suave
-}
+        "RRJ": "#0095fe",
+        "RSP": "#ff8f06",
+        "RBR": "#1ec700fe",
+        "FIS": "#fce4ec"
+    }
 
 
 if  "console" not in st.session_state:
