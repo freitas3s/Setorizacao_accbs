@@ -232,8 +232,9 @@ else:
             cols = st.columns(len(fronteiras_agrupadas))
 
         observacoes = carregar_observacoes()
-        regiao = ctr.split("(")[-1].replace(")", "")
-        cor_borda = cor_por_regiao.get(regiao,"#4F8BF9")
+        ctr_regiao = ctr.split("(")[-1].replace(")", "")
+        st.write(ctr_regiao)
+        cor_borda = cor_por_regiao.get(ctr_regiao,"#4F8BF9")
 
         for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
             with col:
