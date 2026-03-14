@@ -74,15 +74,13 @@ def setores_app(setor, regiao):
     return setor
 
 
-def cor_por_regiao(regiao):
-    cores = {
+cor_por_regiao = {
         "RRJ": "#0095fe",
         "RSP": "#ff8f06",
         "RBR": "#02d510",
         "FIS": "#fce4ec"
     }
-    if regiao in cores:
-        return f"border: 2px solid {cores.get(regiao, "#090000")}"
+
 
 if  "console" not in st.session_state:
     st.session_state.console = None
@@ -235,7 +233,7 @@ else:
 
         observacoes = carregar_observacoes()
         regiao = ctr.split("(")[-1].replace(")", "")
-        cor_borda = cor_por_regiao(regiao,"#4F8BF9")
+        cor_borda = cor_por_regiao.get(regiao,"#4F8BF9")
 
         for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
             with col:
