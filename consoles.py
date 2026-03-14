@@ -75,11 +75,10 @@ def setores_app(setor, regiao):
 
 
 cor_por_regiao = {
-        "RRJ": "#0095fe",
-        "RSP": "#ff8f06",
-        "RBR": "#02d510",
-        "FIS": "#fce4ec"
-    }
+    "RRJ": "#5DADE2",   # azul suave
+    "RSP": "#F5B041",   # amarelo tendendo ao laranja
+    "RBR": "#58D68D"    # verde suave
+}
 
 
 if  "console" not in st.session_state:
@@ -255,7 +254,7 @@ else:
                     ">
                     <h2 style="margin-bottom: 10px;">{ctr}</h2>
                     <p style="font-size: 34px; margin-bottom: 10px;">
-                        {' - '.join(map(str, setores))}
+                        {'-'.join(map(str, setores))}
                     </p>
 
                     {"<hr>" if obs_setores else ""}
