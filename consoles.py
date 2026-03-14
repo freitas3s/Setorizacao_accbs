@@ -235,7 +235,6 @@ else:
 
         for col, (ctr, setores) in zip(cols, fronteiras_agrupadas.items()):
             ctr_regiao = ctr.split("(")[-1].replace(")", "")
-            st.write(ctr_regiao)
             cor_borda = cor_por_regiao.get(ctr_regiao,"#4F8BF9")
 
             with col:
@@ -261,7 +260,9 @@ else:
 
                     {"<hr>" if obs_setores else ""}
 
-                    {"<p style='font-size: 24px;'>".join(obs_setores)}</p>
+                    <p style="font-size: 24px;">
+                        {"".join(obs_setores)}
+                    </p>
                     </div>
                     """,
                     unsafe_allow_html=True
