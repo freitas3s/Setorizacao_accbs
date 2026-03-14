@@ -183,7 +183,6 @@ else:
         for ctr, setores in sorted(fronteiras_agrupadas.items())
         }
 #bloco app
-
     if st.session_state.regiao == "APP":
             def nome_setor_app_br(setor):
                 setor = str(setor)
