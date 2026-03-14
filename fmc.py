@@ -82,8 +82,8 @@ def estilizar_tabela(df):
 def cor_por_regiao(regiao):
     cores = {
         "RRJ": "#0095fe",
-        "RSP": "#ff062b",
-        "RBR": "#ff9d00",
+        "RSP": "#ff8f06",
+        "RBR": "#02d510",
         "FIS": "#fce4ec"
     }
     return f"background-color: {cores.get(regiao, "#090000")}"

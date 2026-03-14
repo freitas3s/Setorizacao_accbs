@@ -6,6 +6,7 @@ from streamlit_autorefresh import st_autorefresh
 
 
 
+
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
 
@@ -73,6 +74,14 @@ def setores_app(setor, regiao):
     return setor
 
 
+def cor_por_regiao(regiao):
+    cores = {
+        "RRJ": "#0095fe",
+        "RSP": "#ff8f06",
+        "RBR": "#02d510",
+        "FIS": "#fce4ec"
+    }
+    return f"border: 2px solid {cores.get(regiao, "#090000")}"
 
 if  "console" not in st.session_state:
     st.session_state.console = None
@@ -232,7 +241,7 @@ else:
                     for setor in setores
                     if setor in observacoes
                 ]
-
+                st.write(ctr)
                 st.markdown(
                     f"""
                     <div style="
