@@ -260,7 +260,7 @@ else:
                     {"<hr>" if obs_setores else ""}
 
                     <p style="font-size: 24px;">
-                        {"".join(obs_setores)}
+                        {" ".join(obs_setores)}
                     </p>
                     </div>
                     """,
