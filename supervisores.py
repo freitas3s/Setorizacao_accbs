@@ -86,6 +86,15 @@ def registrar_log(regiao, configuracao):
         grupos_formatados,
         qtd_consoles
     ))
+    cur.execute("""
+        INSERT INTO dados_setorização (regiao, horario, grupos, qtd_consoles)
+        VALUES (?, ?, ?, ?)
+    """, (
+        regiao,
+        horario,
+        grupos_formatados,
+        qtd_consoles
+    ))
     conn.commit()
     conn.close()
 

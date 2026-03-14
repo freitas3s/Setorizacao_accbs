@@ -25,6 +25,16 @@ def init_db():
             qtd_consoles INTEGER NOT NULL
         )
     """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS dados_setorização (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            regiao TEXT NOT NULL,
+            horario TEXT NOT NULL,
+            grupos TEXT NOT NULL,
+            qtd_consoles INTEGER NOT NULL
+        )
+    """)
+
     cur.execute(""" 
                 CREATE TABLE IF NOT EXISTS observacoes(
                 regiao TEXT,
