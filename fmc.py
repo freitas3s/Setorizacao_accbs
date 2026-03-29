@@ -4,6 +4,9 @@ from streamlit_autorefresh import st_autorefresh
 import sqlite3
 import pandas as pd
 
+st.title("Controle FMC - Setorização ACC-BS")
+st.markdown("---") 
+
 def get_conn():
     return sqlite3.connect("setorizacao.db", check_same_thread=False)
 
@@ -130,7 +133,8 @@ for col, (regiao, (horario, grupos, qtd)) in zip(cols, ultimo_por_regiao.items()
             unsafe_allow_html=True
         )
 
-st.title("Controle FMC - Setorização ACC-BS")
+
+
 st.markdown("---") 
 
 st.markdown(
