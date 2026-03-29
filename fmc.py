@@ -132,8 +132,8 @@ for col, (regiao, (horario, grupos, qtd)) in zip(cols, ultimo_por_regiao.items()
 
 st.title("Controle FMC - Setorização ACC-BS")
 st.markdown("---") 
-if st.button("carregar agrupamentos anteriores", key="carregar_anteriores"):
-    st.markdown(
+
+st.markdown(
     df_estilizado.to_html(),
     unsafe_allow_html=True
 )
@@ -160,4 +160,4 @@ cur.execute("SELECT COUNT(*) FROM setorizacao_log")
 st.write("Registros restantes:", cur.fetchone()[0])
 conn.close()
 
-st_autorefresh(interval=300000, key="refresh_panorama")
+st_autorefresh(interval=30000, key="refresh_panorama")
