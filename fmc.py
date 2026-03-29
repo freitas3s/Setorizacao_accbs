@@ -145,8 +145,7 @@ st.markdown(
 )
 
 st.markdown("---")
-    
-st.warning("Cuidado !!! Esta ação apagará todos os registros anteriores.")
+
 if st.button("Apagar registros", key="apagar_logs"):
         conn = get_conn()
         cur = conn.cursor()
@@ -160,10 +159,12 @@ if st.button("Apagar registros", key="apagar_logs"):
         conn.close()
         st.success("Registros apagados com sucesso!")
 
+st.warning("Cuidado!!! Esta ação apagará todos os registros anteriores.")
+
 conn = get_conn()
 cur = conn.cursor()
 cur.execute("SELECT COUNT(*) FROM setorizacao_log")
-st.write("Registros restantes:", cur.fetchone()[0])
+# st.write("Registros restantes:", cur.fetchone()[0])
 conn.close()
 
 st_autorefresh(interval=5000, key="refresh_panorama")
