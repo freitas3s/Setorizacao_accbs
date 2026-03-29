@@ -160,4 +160,4 @@ cur.execute("SELECT COUNT(*) FROM setorizacao_log")
 st.write("Registros restantes:", cur.fetchone()[0])
 conn.close()
 
-st_autorefresh(interval=30000, key="refresh_panorama")
+st_autorefresh(interval=5000, key="refresh_panorama")
